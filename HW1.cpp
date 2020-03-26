@@ -34,10 +34,9 @@ void show_all()
 int bin_to_dec(bool *p)
 {
     int decimal = 0;
-    for (int i = 0; i < SIZE; i++)
-    {
+    for (int i = SIZE; i > 0; i--) {
         if (*p++) {
-            decimal += pow(2.0, i);
+            decimal += pow(2.0, i-1);
         }
     }
     
@@ -48,7 +47,7 @@ int main(int argc, const char** argv)
 {
     init();
     show_all();
-    cout << A[0];
+    cout << bin_to_dec(A[3]);
 
 
     return 0;
