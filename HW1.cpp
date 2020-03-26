@@ -7,10 +7,8 @@ bool A[NUM][SIZE];
 
 void init() 
 {
-    for (int i = 0; i < NUM; i++)
-    {
-        for (int j = 0; j < SIZE; j++)
-        {
+    for (int i = 0; i < NUM; i++){
+        for (int j = 0; j < SIZE; j++){
             A[i][j] = rand() % 2;
         }
     }
