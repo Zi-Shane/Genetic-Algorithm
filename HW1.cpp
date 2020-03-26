@@ -1,4 +1,5 @@
 #include <iostream>
+#include <math.h>
 using namespace std;
 
 #define SIZE 8
@@ -30,10 +31,24 @@ void show_all()
     show_one(A[3]);
 }
 
+int bin_to_dec(bool *p)
+{
+    int decimal = 0;
+    for (int i = 0; i < SIZE; i++)
+    {
+        if (*p++) {
+            decimal += pow(2.0, i);
+        }
+    }
+    
+    return decimal;
+}
+
 int main(int argc, const char** argv) 
 {
     init();
     show_all();
+    cout << A[0];
 
 
     return 0;
