@@ -6,7 +6,8 @@ using namespace std;
 #define NUM 4
 int gen_parent[NUM][SIZE];
 int gen_child[NUM][SIZE];
-int A_decimal[NUM];
+int parent_decimal[NUM];
+int child_decimal[NUM];
 
 // convert binary to decimal
 int bin_to_dec(int *p)
@@ -22,14 +23,20 @@ int bin_to_dec(int *p)
 }
 
 // decimal
-void cal_decimal()
+void cal_decimal_parent()
 {
     for (int i = 0; i < NUM; i++) {
-        A_decimal[i] = bin_to_dec(gen_parent[i]);
+        parent_decimal[i] = bin_to_dec(gen_parent[i]);
+    }
+}
+void cal_decimal_child()
+{
+    for (int i = 0; i < NUM; i++) {
+        child_decimal[i] = bin_to_dec(gen_child[i]);
     }
 }
 
-// initialize A[NUM][SIZE]
+// initialize gen_parent[NUM][SIZE]
 void init()
 {
     for (int i = 0; i < NUM; i++){
@@ -37,7 +44,7 @@ void init()
             gen_parent[i][j] = rand() % 2;
         }
     }
-    cal_decimal();
+    cal_decimal_parent();
 }
 
 // printout binary
@@ -48,49 +55,67 @@ void show_one(int *num)
     }
     cout << endl;
 }
-
-// printout all binaries
 void show_all_parent()
 {
-    show_one(gen_parent[0]);
-    show_one(gen_parent[1]);
-    show_one(gen_parent[2]);
-    show_one(gen_parent[3]);
+    for (int i = 0; i < NUM; i++) {
+        show_one(gen_parent[i]);
+    }
 }
 void show_all_child()
 {
-    show_one(gen_child[0]);
-    show_one(gen_child[1]);
-    show_one(gen_child[2]);
-    show_one(gen_child[3]);
+    for (int i = 0; i < NUM; i++) {
+        show_one(gen_child[i]);
+    }
+}
+
+void new_parent()
+{
+    for (int i = 0; i < NUM; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            gen_parent[i][j] = gen_child[i][j];
+        }
+    }
+    cal_decimal_parent();
 }
 
 void find_smallest()
 {
-    int temp = A_decimal[0], first_min = 0, second_min = 0;
+    int temp = parent_decimal[0], first_min = 0, second_min = 0;
     for (int i = 0; i < NUM; i++) {
-        if (temp > A_decimal[i]) {
-            temp = A_decimal[i];
+        if (temp > parent_decimal[i]) {
+            temp = parent_decimal[i];
             first_min = i;
         }
     }
-    temp = A_decimal[0];
+    temp = parent_decimal[0];
     for (int i = 0; i < NUM; i++) {
-        if (temp > A_decimal[i] && i != first_min) {
-            temp = A_decimal[i];
+        if (temp > parent_decimal[i] && i != first_min) {
+            temp = parent_decimal[i];
             second_min = i;
         }
     }
-    cout << "first_smallest:  ";show_one(gen_parent[first_min]);
-    cout << "second_smallest: ";show_one(gen_parent[second_min]);
-    cout << "============================" << endl;
-
+    // cout << "first_smallest:  ";show_one(gen_parent[first_min]);
+    // cout << "second_smallest: ";show_one(gen_parent[second_min]);
+    // cout << "============================" << endl;
+    
     for (int i = 0; i < SIZE; i++)
     {
         gen_child[0][i] = gen_parent[first_min][i];
         gen_child[1][i] = gen_parent[second_min][i];
     }
-    
+}
+
+void mutation()
+{
+    for (int i = 0; i < NUM; i++)
+    {
+        int p = rand() % SIZE;
+        if (gen_child[i][p]) {
+            gen_child[i][p] = 0;
+        } else {
+            gen_child[i][p] = 1;
+        }
+    }
 }
 
 void one_point_crossover()
@@ -100,21 +125,36 @@ void one_point_crossover()
     {
         gen_child[2][i] = gen_child[0][i];
         gen_child[3][i] = gen_child[1][i];
-        if (i > 3) 
-        {
+        if (i > 3)  { // cross point
             gen_child[2][i] = gen_child[1][i];
             gen_child[3][i] = gen_child[0][i];
         }
     }
+    cal_decimal_child();
+    if (child_decimal[0] == child_decimal[1]) {
+        mutation();
+        cal_decimal_child();
+    }
+    // setting childrend to parents of next generation
+    new_parent();
 }
 
 int main(int argc, const char** argv) 
 {
     init();
-    show_all_parent();
-    one_point_crossover();
-    show_all_child();
-
+    for (int i = 0; i < 20; i++)
+    {
+        show_all_parent();
+        cout << "========================" << endl;
+        one_point_crossover();
+        // show_all_child();
+        if (child_decimal[0] == 0)
+        {
+            cout << "find answer, at generation " << i+1 << endl;
+            show_all_child();
+            break;
+        }
+    }
     return 0;
 }
 
