@@ -84,27 +84,28 @@ void new_parent()
 int func(int n)
 {
     // return pow(n, 2) - 16;
-    return n - 22;
+    return n - 243;
 }
 
 // find smallest number and secondary smallest number
 void find_smallest()
 {
     // find smallest number
-    int temp = func(parent_decimal[0]), first_min = 0, second_min = 0;
+    int temp_abs = abs(func(parent_decimal[0])), first_min = 0, second_min = 0;
+    int answer_abs;
     for (int i = 0; i < NUM; i++) {
-        int answer = func(parent_decimal[i]);
-        if (temp > answer) {
-            temp = answer;
+        answer_abs = abs(func(parent_decimal[i]));
+        if (temp_abs > answer_abs) {
+            temp_abs = answer_abs;
             first_min = i;
         }
     }
-    temp = func(parent_decimal[0]);
+    temp_abs = func(parent_decimal[0]);
     // find secondary smallest number
     for (int i = 0; i < NUM; i++) {
-        int answer = func(parent_decimal[i]);
-        if (temp > answer && i != first_min) {
-            temp = answer;
+        answer_abs = abs(func(parent_decimal[i]));
+        if (temp_abs > answer_abs && i != first_min) {
+            temp_abs = answer_abs;
             second_min = i;
         }
     }
@@ -152,11 +153,11 @@ void one_point_crossover()
     new_parent();
 }
 
-int algorithm()
+int algorithm(int iteration)
 {
     int func_output;
     init();
-    for (int i = 0; i < 100; i++)
+    for (int i = 0; i < iteration; i++)
     {
         one_point_crossover();
         // if smallest number and secondary smallest number are same, do mutaion
@@ -194,7 +195,7 @@ int algorithm()
 
 int main(int argc, const char** argv) 
 {
-    if(algorithm()) {
+    if(algorithm(200)) {
         cout << "not found, " << "best is: " << best << endl;
     }
     return 0;
