@@ -8,6 +8,7 @@ int gen_parent[NUM][SIZE];
 int gen_child[NUM][SIZE];
 int parent_decimal[NUM];
 int child_decimal[NUM];
+int best = 256;
 
 // function for convert binary to decimal
 int bin_to_dec(int *p)
@@ -79,22 +80,31 @@ void new_parent()
     cal_decimal_parent();
 }
 
+// the function you want to solve
+int func(int n)
+{
+    // return pow(n, 2) - 16;
+    return n - 22;
+}
+
 // find smallest number and secondary smallest number
 void find_smallest()
 {
     // find smallest number
-    int temp = parent_decimal[0], first_min = 0, second_min = 0;
+    int temp = func(parent_decimal[0]), first_min = 0, second_min = 0;
     for (int i = 0; i < NUM; i++) {
-        if (temp > parent_decimal[i]) {
-            temp = parent_decimal[i];
+        int answer = func(parent_decimal[i]);
+        if (temp > answer) {
+            temp = answer;
             first_min = i;
         }
     }
-    temp = parent_decimal[0];
+    temp = func(parent_decimal[0]);
     // find secondary smallest number
     for (int i = 0; i < NUM; i++) {
-        if (temp > parent_decimal[i] && i != first_min) {
-            temp = parent_decimal[i];
+        int answer = func(parent_decimal[i]);
+        if (temp > answer && i != first_min) {
+            temp = answer;
             second_min = i;
         }
     }
@@ -138,42 +148,54 @@ void one_point_crossover()
         }
     }
     cal_decimal_child();
-    // if smallest number and secondary smallest number are same, do mutaion
-    if (child_decimal[0] == child_decimal[1]) {
-        mutation();
-        cal_decimal_child();
-    }
     // setting childrend to parents of next generation
     new_parent();
 }
 
-// the function you want to solve
-int func(int n)
+int algorithm()
 {
-    return pow(n, 2) - 64;
+    int func_output;
+    init();
+    for (int i = 0; i < 100; i++)
+    {
+        one_point_crossover();
+        // if smallest number and secondary smallest number are same, do mutaion
+        if (child_decimal[0] == child_decimal[1]) {
+            mutation();
+            new_parent();
+        }
+
+        // printout each generation
+        cout << "gen" << i + 1 << endl;
+        show_all_parent();
+        cout << "========================" << endl;
+
+        // show_all_child();
+        for (int j = 0; j < NUM; j++)
+        {
+            func_output = func(parent_decimal[j]);
+            if (func_output == 0)
+            {
+                cout << "find answer, at generation " << i+1 << endl;
+                cout << "answer is: " << parent_decimal[j] << ", ";
+                cout << "binary: ";
+                show_one(gen_parent[j]);
+                // show_all_child();
+                return 0;
+            } else {
+                if (abs(func_output) < abs(func(best))) {
+                    best = parent_decimal[j];
+                }
+            }
+        }
+    }
+    return 1;
 }
 
 int main(int argc, const char** argv) 
 {
-    init();
-    for (int i = 0; i < 100; i++)
-    {
-        show_all_parent();
-        cout << "========================" << endl;
-        one_point_crossover();
-        // show_all_child();
-        for (int j = 0; j < NUM; j++)
-        {
-            if (func(child_decimal[j]) == 0)
-            {
-                cout << "find answer, at generation " << i+1 << endl;
-                cout << "answer is: " << child_decimal[j] << ", ";
-                cout << "binary: ";
-                show_one(gen_child[j]);
-                // show_all_child();
-                return 0;
-            }
-        }
+    if(algorithm()) {
+        cout << "not found, " << "best is: " << best << endl;
     }
     return 0;
 }
