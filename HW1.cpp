@@ -9,7 +9,7 @@ int gen_child[NUM][SIZE];
 int parent_decimal[NUM];
 int child_decimal[NUM];
 
-// convert binary to decimal
+// function for convert binary to decimal
 int bin_to_dec(int *p)
 {
     int decimal = 0;
@@ -18,17 +18,17 @@ int bin_to_dec(int *p)
             decimal += *p << i;
         }
     }
-
     return decimal;
 }
 
-// decimal
+// parents' decimal
 void cal_decimal_parent()
 {
     for (int i = 0; i < NUM; i++) {
         parent_decimal[i] = bin_to_dec(gen_parent[i]);
     }
 }
+// children's decimal
 void cal_decimal_child()
 {
     for (int i = 0; i < NUM; i++) {
@@ -68,6 +68,7 @@ void show_all_child()
     }
 }
 
+// set childern to next generation's parent
 void new_parent()
 {
     for (int i = 0; i < NUM; i++) {
@@ -78,8 +79,10 @@ void new_parent()
     cal_decimal_parent();
 }
 
+// find smallest number and secondary smallest number
 void find_smallest()
 {
+    // find smallest number
     int temp = parent_decimal[0], first_min = 0, second_min = 0;
     for (int i = 0; i < NUM; i++) {
         if (temp > parent_decimal[i]) {
@@ -88,6 +91,7 @@ void find_smallest()
         }
     }
     temp = parent_decimal[0];
+    // find secondary smallest number
     for (int i = 0; i < NUM; i++) {
         if (temp > parent_decimal[i] && i != first_min) {
             temp = parent_decimal[i];
@@ -98,6 +102,7 @@ void find_smallest()
     // cout << "second_smallest: ";show_one(gen_parent[second_min]);
     // cout << "============================" << endl;
     
+    // set smallest number and secondary smallest number to parent of next generation
     for (int i = 0; i < SIZE; i++)
     {
         gen_child[0][i] = gen_parent[first_min][i];
@@ -105,6 +110,7 @@ void find_smallest()
     }
 }
 
+// randonly change one bit
 void mutation()
 {
     for (int i = 0; i < NUM; i++)
@@ -121,16 +127,18 @@ void mutation()
 void one_point_crossover()
 {
     find_smallest();
+    // crossover smallest number and secondary smallest number
     for (int i = 0; i < SIZE; i++)
     {
         gen_child[2][i] = gen_child[0][i];
         gen_child[3][i] = gen_child[1][i];
-        if (i > 3)  { // cross point
+        if (i > 3) { // cross point
             gen_child[2][i] = gen_child[1][i];
             gen_child[3][i] = gen_child[0][i];
         }
     }
     cal_decimal_child();
+    // if smallest number and secondary smallest number are same, do mutaion
     if (child_decimal[0] == child_decimal[1]) {
         mutation();
         cal_decimal_child();
@@ -139,20 +147,32 @@ void one_point_crossover()
     new_parent();
 }
 
+// the function you want to solve
+int func(int n)
+{
+    return pow(n, 2) - 64;
+}
+
 int main(int argc, const char** argv) 
 {
     init();
-    for (int i = 0; i < 20; i++)
+    for (int i = 0; i < 100; i++)
     {
         show_all_parent();
         cout << "========================" << endl;
         one_point_crossover();
         // show_all_child();
-        if (child_decimal[0] == 0)
+        for (int j = 0; j < NUM; j++)
         {
-            cout << "find answer, at generation " << i+1 << endl;
-            show_all_child();
-            break;
+            if (func(child_decimal[j]) == 0)
+            {
+                cout << "find answer, at generation " << i+1 << endl;
+                cout << "answer is: " << child_decimal[j] << ", ";
+                cout << "binary: ";
+                show_one(gen_child[j]);
+                // show_all_child();
+                return 0;
+            }
         }
     }
     return 0;
