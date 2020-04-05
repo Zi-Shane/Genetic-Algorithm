@@ -84,10 +84,10 @@ void new_parent()
 int func(int n)
 {
     // return pow(n, 2) - 16;
-    return n - 243;
+    return n - 20;
 }
 
-// find smallest number and secondary smallest number
+// find smallest number and secondary small number
 void find_smallest()
 {
     // find smallest number
@@ -101,7 +101,7 @@ void find_smallest()
         }
     }
     temp_abs = func(parent_decimal[0]);
-    // find secondary smallest number
+    // find secondary small number
     for (int i = 0; i < NUM; i++) {
         answer_abs = abs(func(parent_decimal[i]));
         if (temp_abs > answer_abs && i != first_min) {
@@ -109,11 +109,11 @@ void find_smallest()
             second_min = i;
         }
     }
-    // cout << "first_smallest:  ";show_one(gen_parent[first_min]);
-    // cout << "second_smallest: ";show_one(gen_parent[second_min]);
-    // cout << "============================" << endl;
+    cout << "first_smallest:  ";show_one(gen_parent[first_min]);
+    cout << "second_smallest: ";show_one(gen_parent[second_min]);
+    cout << "============================" << endl;
     
-    // set smallest number and secondary smallest number to parent of next generation
+    // set smallest number and secondary small number to parent of next generation
     for (int i = 0; i < SIZE; i++)
     {
         gen_child[0][i] = gen_parent[first_min][i];
@@ -121,16 +121,39 @@ void find_smallest()
     }
 }
 
-// randonly change one bit
-void mutation()
+// randomly change one bit
+void single_point_mutation()
 {
+    int p;
     for (int i = 0; i < NUM; i++)
     {
-        int p = rand() % SIZE;
+        p = rand() % SIZE;
         if (gen_child[i][p]) {
             gen_child[i][p] = 0;
         } else {
             gen_child[i][p] = 1;
+        }
+    }
+}
+void two_point_mutation()
+{
+    int p, q;
+    for (int i = 0; i < NUM; i++)
+    {
+        p = rand() % SIZE;
+        if (gen_child[i][p]) {
+            gen_child[i][p] = 0;
+        } else {
+            gen_child[i][p] = 1;
+        }
+
+        do {
+            q = rand() % SIZE;
+        } while (p == q);
+        if (gen_child[i][q]) {
+            gen_child[i][q] = 0;
+        } else {
+            gen_child[i][q] = 1;
         }
     }
 }
@@ -153,16 +176,42 @@ void one_point_crossover()
     new_parent();
 }
 
+void two_point_crossover()
+{
+    find_smallest();
+    // crossover smallest number and secondary smallest number
+    for (int i = 0; i < SIZE; i++)
+    {
+        if (i < 2) {
+            gen_child[2][i] = gen_child[0][i];
+            gen_child[3][i] = gen_child[1][i];
+        }
+        gen_child[2][i] = gen_child[0][i];
+        gen_child[3][i] = gen_child[1][i];
+        if (i > 5) { // cross point
+            gen_child[2][i] = gen_child[1][i];
+            gen_child[3][i] = gen_child[0][i];
+        }
+    }
+    cal_decimal_child();
+    // setting childrend to parents of next generation
+    new_parent();
+}
+
 int algorithm(int iteration)
 {
     int func_output;
     init();
+    cout << "parent" << endl;
+    show_all_parent();
     for (int i = 0; i < iteration; i++)
     {
-        one_point_crossover();
+        // one_point_crossover();
+        two_point_crossover();
         // if smallest number and secondary smallest number are same, do mutaion
         if (child_decimal[0] == child_decimal[1]) {
-            mutation();
+            // single_point_mutation();
+            two_point_mutation();
             new_parent();
         }
 
@@ -171,33 +220,32 @@ int algorithm(int iteration)
         show_all_parent();
         cout << "========================" << endl;
 
-        // show_all_child();
+        // find answers
         for (int j = 0; j < NUM; j++)
         {
             func_output = func(parent_decimal[j]);
-            if (func_output == 0)
+            if (func_output == 0)  // found global best answer
             {
                 cout << "find answer, at generation " << i+1 << endl;
                 cout << "answer is: " << parent_decimal[j] << ", ";
                 cout << "binary: ";
                 show_one(gen_parent[j]);
-                // show_all_child();
                 return 0;
-            } else {
+            } else {  // found best answer
                 if (abs(func_output) < abs(func(best))) {
                     best = parent_decimal[j];
                 }
             }
         }
     }
+    cout << "not found, " << "best is: " << best << endl;
     return 1;
 }
 
 int main(int argc, const char** argv) 
 {
-    if(algorithm(200)) {
-        cout << "not found, " << "best is: " << best << endl;
-    }
+    // genetic algorithm run 200 iterations
+    algorithm(200);
     return 0;
 }
 
