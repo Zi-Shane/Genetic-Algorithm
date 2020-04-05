@@ -83,8 +83,10 @@ void new_parent()
 // the function you want to solve
 int func(int n)
 {
-    // return pow(n, 2) - 16;
-    return n - 20;
+    // return pow(n, 3) - 216;
+    return pow(n, 2) - 225;
+    // return n - 177;
+    // return n - 255;
 }
 
 // find smallest number and secondary small number
@@ -166,7 +168,7 @@ void one_point_crossover()
     {
         gen_child[2][i] = gen_child[0][i];
         gen_child[3][i] = gen_child[1][i];
-        if (i > 3) { // cross point
+        if (i > 5) { // cross point
             gen_child[2][i] = gen_child[1][i];
             gen_child[3][i] = gen_child[0][i];
         }
@@ -176,7 +178,7 @@ void one_point_crossover()
     new_parent();
 }
 
-void two_point_crossover()
+void multi_point_crossover()
 {
     find_smallest();
     // crossover smallest number and secondary smallest number
@@ -185,6 +187,10 @@ void two_point_crossover()
         if (i < 2) {
             gen_child[2][i] = gen_child[0][i];
             gen_child[3][i] = gen_child[1][i];
+        }
+        if (i >= 2 && i <= 3) {
+            gen_child[2][i] = gen_child[1][i];
+            gen_child[3][i] = gen_child[0][i];
         }
         gen_child[2][i] = gen_child[0][i];
         gen_child[3][i] = gen_child[1][i];
@@ -201,15 +207,20 @@ void two_point_crossover()
 int algorithm(int iteration)
 {
     int func_output;
+    int mutaion_rate = 0.9;
     init();
     cout << "parent" << endl;
     show_all_parent();
     for (int i = 0; i < iteration; i++)
     {
-        // one_point_crossover();
-        two_point_crossover();
+        // crossover
+        one_point_crossover();
+        // multi_point_crossover();
+
+        // mutation
         // if smallest number and secondary smallest number are same, do mutaion
-        if (child_decimal[0] == child_decimal[1]) {
+        if (child_decimal[0] == child_decimal[1] || (rand() % 100) / 100 > mutaion_rate) {
+            cout << "mutaion" << endl;
             // single_point_mutation();
             two_point_mutation();
             new_parent();
