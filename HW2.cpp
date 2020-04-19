@@ -67,34 +67,38 @@ void show_all_child()
 void cal_fitness()
 {
     int current_fitness;
+    int current_weight;
 
     for (int i = 0; i < POPULATION_SIZE; i++)
     {
         current_fitness = 0;
+        current_weight = 0;
+
         for (int j = 0; j < CHROMOSOME; j++) {
             current_fitness = current_fitness + value[j] * gen_old[i][j];
+            current_weight = current_weight + weight[j] * gen_old[i][j];
         }
 
-        if (current_fitness > BAG_LIMITAION) {
+        if (current_weight > BAG_LIMITAION) {
             fitness[i] = 0;
         } else {
             fitness[i] = current_fitness;
         }
+        // cout << current_weight << ": " << fitness[i] << endl;
     }
 }
 
-void find_best()
+int find_best()
 {
     int best = 0;
     cal_fitness();
     for (int i = 0; i < POPULATION_SIZE; i++) {
-        cout << fitness[i] << ", ";
         if (fitness[i] > best) {
             best = fitness[i];
         }
     }
     
-    // return best;
+    return best;
 }
 
 // Selection
@@ -186,13 +190,13 @@ void two_point_mutation(int* population_p)
 void mutation()
 {
     // int start = POPULATION_SIZE / 2;
+    int start = 0;
     double threshold = 0.9;
     double rndNumber;
-    for (int i = 0; i < POPULATION_SIZE; i++)
+    for (int i = start; i < POPULATION_SIZE; i++)
     {
         double rndNumber = rand() / (double) RAND_MAX;
         // rndNumber = (double)(rand() % 100) / 100;
-        // cout << rndNumber << endl;
         if (rndNumber > threshold) {
             two_point_mutation(gen_new[i]);
         }
@@ -202,33 +206,27 @@ void mutation()
 int bagpack_problem()
 {
     int count = 0;
+    int best = 0;
+
     init();
-    while (count < 1)
+    while (count < 100)
     {
-        // show_all_parent();
         selection(POPULATION_SIZE / 2);
-        // show_all_child();
-        
         crossover();
-
         mutation();
-
         new_to_old();
-
-        find_best();
+        if (find_best() > best) {
+            best = find_best();
+        }
         count++;
     }
-    
-
-
-
-    return 0;
+    return best;
 }
 
 int main(int argc, const char** argv) 
 {
     int answer = bagpack_problem();
-    // cout << answer << endl;
+    cout << answer << endl;
     return 0;
 }
 
