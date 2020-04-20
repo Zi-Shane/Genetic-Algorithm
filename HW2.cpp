@@ -2,8 +2,8 @@
 #include <math.h>
 using namespace std;
 
-#define CHROMOSOME 10  // # items
-#define BAG_LIMITAION 27.5
+#define CHROMOSOME 100  // # items
+#define BAG_LIMITAION 275
 #define POPULATION_SIZE 8
 
 int weight[CHROMOSOME];
@@ -11,6 +11,12 @@ int value[CHROMOSOME];
 int fitness[POPULATION_SIZE];
 int gen_old[POPULATION_SIZE][CHROMOSOME];
 int gen_new[POPULATION_SIZE][CHROMOSOME];
+
+// temp
+int best_bin[CHROMOSOME];
+int best_i;
+int b_temp;
+
 
 void init()
 {
@@ -118,6 +124,7 @@ int find_best()
     for (int i = 0; i < POPULATION_SIZE; i++) {
         if (fitness[i] > best) {
             best = fitness[i];
+            b_temp = i; // temp
         }
     }
     
@@ -276,7 +283,7 @@ void mutation()
 {
     // int start = POPULATION_SIZE / 2;  // mutation only children population
     int start = 0;  // mutation all population
-    double threshold = 0.8;
+    double threshold = 0.6;
     double rndNumber;
     for (int i = start; i < POPULATION_SIZE; i++)
     {
@@ -299,7 +306,8 @@ int bagpack_problem()
 
     init();
     // show_all_parent();
-    while (count < 10000 && temp_count < 500)
+    // while (count < 100000)
+    while (count < 10000000 && temp_count < 800000)
     {
         selection(POPULATION_SIZE / 2);
         crossover();
@@ -315,7 +323,7 @@ int bagpack_problem()
             temp_count++;
         } else {
             temp = best;
-            // cout << temp_count << endl;
+            cout << temp_count << endl;
             temp_count = 0;
         }
 
