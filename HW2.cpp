@@ -2,8 +2,8 @@
 #include <math.h>
 using namespace std;
 
-#define CHROMOSOME 100  // # items
-#define BAG_LIMITAION 300
+#define CHROMOSOME 10  // # items
+#define BAG_LIMITAION 27.5
 #define POPULATION_SIZE 8
 
 int weight[CHROMOSOME];
@@ -292,13 +292,14 @@ void mutation()
 
 int bagpack_problem()
 {
-    int count = 0;
-    int best = 0;
+    int count = 0;  // maximum rounds
+    int best = 0; // final best value
     int best_round = 0;
-    int temp = 0, temp_count = 0;
+    int temp = 0, temp_count = 0;  // count best in same value
 
     init();
-    while (count < 10000000 && temp_count < 10000)
+    // show_all_parent();
+    while (count < 10000 && temp_count < 500)
     {
         selection(POPULATION_SIZE / 2);
         crossover();
@@ -314,7 +315,7 @@ int bagpack_problem()
             temp_count++;
         } else {
             temp = best;
-            cout << temp_count << endl;
+            // cout << temp_count << endl;
             temp_count = 0;
         }
 
